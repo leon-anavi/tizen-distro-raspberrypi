@@ -21,6 +21,7 @@ SECTION = "libs"
 DEPENDS = "expat freetype zlib"
 
 SRC_URI = "http://fontconfig.org/release/fontconfig-${PV}.tar.gz \
+           file://revert-static-pkgconfig.patch \
            "
 SRC_URI[md5sum] = "e75e303b4f7756c2b16203a57ac87eba"
 SRC_URI[sha256sum] = "b6b066c7dce3f436fdc0dfbae9d36122b38094f4f53bd8dffd45e195b0540d8d"
