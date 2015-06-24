@@ -250,7 +250,7 @@ do_compile() {
  	   -Denable_docs=ON
  
  
- oe_runmake
+ oe_runmake -j16
  
  
  

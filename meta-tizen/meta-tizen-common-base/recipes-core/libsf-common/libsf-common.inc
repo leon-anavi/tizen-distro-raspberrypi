@@ -68,7 +68,7 @@ do_compile() {
          -DCMAKE_TOOLCHAIN_FILE=${WORKDIR}/toolchain.cmake \
          ${EXTRA_OECMAKE} .
  
- make
+ make -j16
  
  
  

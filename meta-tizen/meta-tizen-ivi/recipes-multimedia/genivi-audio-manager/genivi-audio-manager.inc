@@ -91,7 +91,7 @@ do_compile() {
         -DCMAKE_INSTALL_PREFIX=${prefix} \
         ..
  #make VERBOSE=1
- oe_runmake
+ oe_runmake -j16
  
  
  

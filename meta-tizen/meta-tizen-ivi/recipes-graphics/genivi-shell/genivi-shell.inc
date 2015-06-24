@@ -84,7 +84,7 @@ do_compile() {
  LD_AS_NEEDED=1; export LD_AS_NEEDED ;
  
  
- make V=1
+ make -j16 V=1
  
  
  

@@ -63,7 +63,7 @@ do_compile() {
   autotools_do_configure
   
   # make -C po update-gmo
-  oe_runmake
+  oe_runmake -j16
   
   
   

@@ -131,7 +131,7 @@ do_compile() {
  	-DUNITDIR_USER=${prefix}/lib/systemd/user \
  	-DTZ_SYS_SMACK=${sysconfdir}/smack
  
- make
+ make -j16
  
  
  

@@ -85,7 +85,7 @@ do_compile() {
          ${EXTRA_OECMAKE} . \
  -Dwith_wayland=TRUE
  
- oe_runmake
+ oe_runmake -j16
  
  
  

@@ -74,7 +74,7 @@ do_compile() {
   
   autotools_do_configure
   
-  oe_runmake
+  oe_runmake -j16
   
   
   

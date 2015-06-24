@@ -86,7 +86,7 @@ do_compile() {
   
   autotools_do_configure
   
-  make
+  make -j16
   
   
   

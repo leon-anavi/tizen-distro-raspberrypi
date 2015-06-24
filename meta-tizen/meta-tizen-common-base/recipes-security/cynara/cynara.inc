@@ -166,7 +166,7 @@ do_compile() {
          -DBUILD_TESTS=ON \
          -DCMAKE_BUILD_TYPE=RELEASE \
          -DCMAKE_VERBOSE_MAKEFILE=ON
- make
+ make -j16
  
  
  

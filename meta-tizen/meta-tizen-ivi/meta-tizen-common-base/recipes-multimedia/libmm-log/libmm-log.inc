@@ -53,7 +53,7 @@ do_compile() {
   ./autogen.sh
   
   autotools_do_configure
-  oe_runmake
+  oe_runmake -j16
   
   
   
