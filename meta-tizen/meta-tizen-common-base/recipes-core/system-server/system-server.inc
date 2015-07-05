@@ -5,6 +5,7 @@ LICENSE = "Apache-2.0"
 PV = "2.0.0"
 
 SRC_URI = ""
+SRC_URI += "file://0001-Do-not-set-an-absolute-path-to-msgfmt.patch"
 
 S = "${WORKDIR}/git"
 

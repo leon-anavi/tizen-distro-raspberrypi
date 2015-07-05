@@ -1,0 +1,26 @@
+From 39033cd08da32e7b3a6001c71cfc5c62f38d488f Mon Sep 17 00:00:00 2001
+From: Thiago Santos <thiagoss@osg.samsung.com>
+Date: Sun, 5 Jul 2015 19:44:56 -0300
+Subject: [PATCH] Do not set an absolute path to msgfmt
+
+Signed-off-by: Thiago Santos <thiagoss@osg.samsung.com>
+---
+ sys_pci_noti/po_sys_pci_noti/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sys_pci_noti/po_sys_pci_noti/CMakeLists.txt b/sys_pci_noti/po_sys_pci_noti/CMakeLists.txt
+index e4878ec..484eb6b 100644
+--- a/sys_pci_noti/po_sys_pci_noti/CMakeLists.txt
++++ b/sys_pci_noti/po_sys_pci_noti/CMakeLists.txt
+@@ -2,7 +2,7 @@
+ 
+ SET(POFILES ar.po el_GR.po es_ES.po fi.po gl.po hy.po ka.po lv.po pl.po ru_RU.po sv.po zh_CN.po az.po cs.po en_PH.po es_MX.po fr_CA.po hi.po is.po kk.po mk.po pt_BR.po sk.po tr_TR.po zh_HK.po bg.po da.po en.po et.po fr_FR.po hr.po it_IT.po ko_KR.po nb.po pt_PT.po sl.po uk.po zh_SG.po ca.po de_DE.po en_US.po eu.po ga.po hu.po ja_JP.po lt.po nl_NL.po ro.po sr.po uz.po zh_TW.po)
+ 
+-SET(MSGFMT "/usr/bin/msgfmt")
++SET(MSGFMT "msgfmt")
+ 
+ FOREACH(pofile ${POFILES})
+ 	SET(pofile ${CMAKE_CURRENT_SOURCE_DIR}/${pofile})
+-- 
+2.1.4
+
