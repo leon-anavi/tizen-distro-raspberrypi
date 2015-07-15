@@ -1,5 +1,6 @@
 require orc.inc
 
+SRC_URI = "http://gstreamer.freedesktop.org/orc/orc-${PV}.tar.gz"
 PR = "${INC_PR}.0"
 
 SRC_URI[orc.md5sum] = "1a2552e8d127526c48d644fe6437b377"

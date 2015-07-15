@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=1400bd9d09e8af56b9ec982b3d85797e"
 
 INC_PR = "r2"
 
-SRC_URI = "http://code.entropywave.com/download/orc/orc-${PV}.tar.gz;name=orc"
+SRC_URI = "http://gstreamer.freedesktop.org/src/orc/orc-${PV}.tar.xz"
 
 inherit autotools pkgconfig
 
