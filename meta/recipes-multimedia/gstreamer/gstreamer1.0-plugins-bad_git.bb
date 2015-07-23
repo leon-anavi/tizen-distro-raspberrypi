@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=73a5855a8119deb017f5f13cf327095d \
 
 S = "${WORKDIR}/git"
 
-SRCREV = "6e5db57d2446a753aaa76bee268e1f95600b14ce"
+SRCREV = "48a1f2792316d01c4ea4c6baa27188ffae73c543"
 
 PACKAGECONFIG[bluez] = "--enable-bluez,--disable-bluez,bluez4"
 PACKAGECONFIG[sbc] = "--enable-sbc,--disable-sbc,sbc"
@@ -20,7 +20,7 @@ EXTRA_OECONF += " \
     "
 
 do_configure() {
-	./autogen.sh --noconfigure
+	${S}/autogen.sh --noconfigure
 	oe_runconf
 }
 

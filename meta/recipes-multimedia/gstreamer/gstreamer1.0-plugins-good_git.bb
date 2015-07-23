@@ -8,10 +8,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
 
 S = "${WORKDIR}/git"
 
-SRCREV = "fd0123800c8c1cf1468c0fa5d592ad0d0d8b4140"
+SRCREV = "afcd462918e3e43036c709c53ed85434879e8134"
 
 do_configure() {
-	./autogen.sh --noconfigure
+	${S}/autogen.sh --noconfigure
 	oe_runconf
 }
 

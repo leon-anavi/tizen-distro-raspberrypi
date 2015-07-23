@@ -8,10 +8,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d \
 SRC_URI = "git://anongit.freedesktop.org/gstreamer/gstreamer;branch=master"
 S = "${WORKDIR}/git"
 
-SRCREV = "3b8181a8c550e74acaba4e8c55bdc649fa551dc9"
+SRCREV = "815b5f69e805c032fc11c77c36e5b8ab5929856d"
 
 do_configure() {
-	./autogen.sh --noconfigure
+	${S}/autogen.sh --noconfigure
 	oe_runconf
 }
 
