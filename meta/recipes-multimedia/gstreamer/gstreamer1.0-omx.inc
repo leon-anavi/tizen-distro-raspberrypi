@@ -15,7 +15,7 @@ PR = "r1"
 GSTREAMER_1_0_OMX_TARGET ?= "bellagio"
 GSTREAMER_1_0_OMX_CORE_NAME ?= "${libdir}/libomxil-bellagio.so.0"
 
-EXTRA_OECONF += "--disable-valgrind --with-omx-target=${GSTREAMER_1_0_OMX_TARGET}"
+EXTRA_OECONF += "--disable-valgrind --with-omx-target=${GSTREAMER_1_0_OMX_TARGET} --disable-examples"
 
 python __anonymous () {
     omx_target = d.getVar("GSTREAMER_1_0_OMX_TARGET", True)
