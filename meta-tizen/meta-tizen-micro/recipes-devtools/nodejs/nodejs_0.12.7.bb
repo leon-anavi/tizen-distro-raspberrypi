@@ -56,20 +56,20 @@ do_install () {
     oe_runmake install DESTDIR=${D}
 
     cd ${D}/usr/lib
-    oe_runnpm config set registry=http://registry.npmjs.org/ 
+    oe_runnpm config set registry=http://registry.npmjs.org/
     oe_runnpm ${NPM_INSTALL_FLAGS} install ${NPM_INSTALL}
 
-    for i in ${NPM_INSTALL}; 
-    do 
-        rm -rf  ${D}/usr/lib/node_modules/$i/doc 
-        rm -rf  ${D}/usr/lib/node_modules/$i/example* 
-       rm -rf  ${D}/usr/lib/node_modules/$i/test        
+    for i in ${NPM_INSTALL};
+    do
+        rm -rf  ${D}/usr/lib/node_modules/$i/doc
+        rm -rf  ${D}/usr/lib/node_modules/$i/example*
+        rm -rf  ${D}/usr/lib/node_modules/$i/test
     done
 
     install -d ${D}${sysconfdir}/init.d
-    install -m 0755 ${WORKDIR}/nodejs.sh ${D}${sysconfdir}/init.d    
-    update-rc.d -r ${D} nodejs.sh start 92 5 .    
-    
+    install -m 0755 ${WORKDIR}/nodejs.sh ${D}${sysconfdir}/init.d
+    update-rc.d -r ${D} nodejs.sh start 92 5 .
+
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)};then
         install -d ${D}${systemd_unitdir}/system
         install -m 0644 ${WORKDIR}/nodejs.service ${D}${systemd_unitdir}/system/
@@ -78,8 +78,6 @@ do_install () {
         cd ${D}${systemd_unitdir}/system/multi-user.target.wants/
         ln -sf ../nodejs.service ${D}${systemd_unitdir}/system/multi-user.target.wants/nodejs.service
     fi
-
-    rm -rf ${D}/usr/lib/node_modules/npm
 }
 
 do_install_append_class-native() {
@@ -94,15 +92,15 @@ do_install_append_class-native() {
     # /usr/bin/npm is symlink to /usr/lib/node_modules/npm/bin/npm-cli.js
     # use sed on npm-cli.js because otherwise symlink is replaced with normal file and
     # npm-cli.js continues to use old shebang
-#    sed "1s^.*^#\!/usr/bin/env node^g" -i ${D}${exec_prefix}/lib/node_modules/npm/bin/npm-cli.js
+    sed "1s^.*^#\!/usr/bin/env node^g" -i ${D}${exec_prefix}/lib/node_modules/npm/bin/npm-cli.js
 }
 
 do_install_append_class-target() {
-#    sed "1s^.*^#\!${bindir}/env node^g" -i ${D}${exec_prefix}/lib/node_modules/npm/bin/npm-cli.js
+    sed "1s^.*^#\!${bindir}/env node^g" -i ${D}${exec_prefix}/lib/node_modules/npm/bin/npm-cli.js
 }
 
 PACKAGES =+ "${PN}-npm"
-FILES_${PN}-npm = "${bindir}/npm"
+FILES_${PN}-npm = "${exec_prefix}/lib/node_modules/npm ${bindir}/npm"
 RDEPENDS_${PN}-npm = "bash python-shell python-datetime python-subprocess python-textutils"
 
 PACKAGES =+ "${PN}-systemtap"
@@ -110,7 +108,7 @@ FILES_${PN}-systemtap = "${datadir}/systemtap"
 
 FILES_${PN} += "${systemd_unitdir}/system/nodejs.service \
                 ${systemd_unitdir}/system/multi-user.target.wants/nodejs.service \
-		${exec_prefix}/lib/node_modules \
+                ${exec_prefix}/lib/node_modules \
                 "
 
 BBCLASSEXTEND = "native"
