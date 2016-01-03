@@ -49,8 +49,8 @@ do_prep() {
  chmod -Rf a+rX,u+w,g-w,o-w ${S}
  #setup -q
  cp ${S}/packaging/tiff.manifest .
- 
- 
+
+
 }
 do_patch_append() {
     bb.build.exec_func('do_prep', d)
@@ -65,18 +65,18 @@ do_compile() {
   export LANG
   unset DISPLAY
   LD_AS_NEEDED=1; export LD_AS_NEEDED ;
-  
+
   local list="html html/images html/man"
   for dir in $list ; do
 	touch "${dir}/all"
 	touch "${dir}/install"
   done
-  
+
   autotools_do_configure
   oe_runmake
-  
-  
-  
+
+
+
 }
 EXTRA_OECONF += " --disable-static --with-pic"
 
@@ -87,20 +87,20 @@ do_install() {
  export LANG
  unset DISPLAY
  rm -rf ${D}
- 
+
  install -d ${D}/${mandir}/man1
  install -d ${D}/${mandir}/man3
  install -d ${D}/usr/bin
  install -d ${D}/usr/include
  install -d ${D}/usr/lib
- 
+
    oe_runmake \
          DESTDIR=${D} \
          INSTALL_ROOT=${D} \
          BINDIR=${prefix}/bin \
-   install  
-   rm -f ${D}${infodir}/dir 
-   find ${D} -regex ".*\.la$" | xargs rm -f -- 
+   install
+   rm -f ${D}${infodir}/dir
+   find ${D} -regex ".*\.la$" | xargs rm -f --
    find ${D} -regex ".*\.a$" | xargs rm -f --
  for f in `find ${D}/${mandir} -type f -print ` ; do
    if [ `wc -l <$f` -eq 1 ] && grep -q "^\.so " $f ; then
@@ -108,13 +108,13 @@ do_install() {
      [ -f "`dirname $f`/$linkto" ] && ln -sf "$linkto" $f
    fi
  done
- 
+
  rm -rf ${D}${prefix}/share/doc/tiff*
  rm -f ${D}${prefix}/lib/*.la
- 
- 
- 
- 
+
+
+
+
 }
 
 pkg_postinst_libtiff() {
