@@ -1,0 +1,9 @@
+[Unit]
+Description=nodejs service
+
+[Service]
+
+ExecStart=/etc/init.d/nodejs.sh
+
+[Install]
+WantedBy=multi-user.target

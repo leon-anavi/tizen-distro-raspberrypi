@@ -62,6 +62,13 @@ class SignatureGenerator(object):
     def dump_sigs(self, dataCache, options):
         return
 
+    def get_taskdata(self):
+       return (self.runtaskdeps, self.taskhash, self.file_checksum_values)
+
+    def set_taskdata(self, data):
+        self.runtaskdeps, self.taskhash, self.file_checksum_values = data
+
+
 class SignatureGeneratorBasic(SignatureGenerator):
     """
     """
@@ -185,7 +192,8 @@ class SignatureGeneratorBasic(SignatureGenerator):
             checksums = bb.fetch2.get_file_checksums(dataCache.file_checksums[fn][task], recipename)
             for (f,cs) in checksums:
                 self.file_checksum_values[k][f] = cs
-                data = data + cs
+                if cs:
+                    data = data + cs
 
         taint = self.read_taint(fn, task, dataCache.stamp[fn])
         if taint:
@@ -196,12 +204,6 @@ class SignatureGeneratorBasic(SignatureGenerator):
         self.taskhash[k] = h
         #d.setVar("BB_TASKHASH_task-%s" % task, taskhash[task])
         return h
-
-    def get_taskdata(self):
-       return (self.runtaskdeps, self.taskhash, self.file_checksum_values)
-
-    def set_taskdata(self, data):
-        self.runtaskdeps, self.taskhash, self.file_checksum_values = data
 
     def dump_sigtask(self, fn, task, stampbase, runtime):
         k = fn + "." + task

@@ -39,6 +39,7 @@ from bb import utils, data, parse, event, cache, providers, taskdata, runqueue
 import Queue
 import signal
 import prserv.serv
+import pyinotify
 
 logger      = logging.getLogger("BitBake")
 collectlog  = logging.getLogger("BitBake.Collection")
@@ -120,7 +121,33 @@ class BBCooker:
 
         self.configuration = configuration
 
+        self.configwatcher = pyinotify.WatchManager()
+        self.configwatcher.bbseen = []
+        self.confignotifier = pyinotify.Notifier(self.configwatcher, self.config_notifications)
+        self.watchmask = pyinotify.IN_CLOSE_WRITE | pyinotify.IN_CREATE | pyinotify.IN_DELETE | \
+                         pyinotify.IN_DELETE_SELF | pyinotify.IN_MODIFY | pyinotify.IN_MOVE_SELF | \
+                         pyinotify.IN_MOVED_FROM | pyinotify.IN_MOVED_TO 
+        self.watcher = pyinotify.WatchManager()
+        self.watcher.bbseen = []
+        self.notifier = pyinotify.Notifier(self.watcher, self.notifications)
+
+
         self.initConfigurationData()
+
+        self.inotify_modified_files = []
+
+        def _process_inotify_updates(server, notifier_list, abort):
+            for n in notifier_list:
+                if n.check_events(timeout=0):
+                    # read notified events and enqeue them
+                    n.read_events()
+                    n.process_events()
+            return 1.0
+
+        self.configuration.server_register_idlecallback(_process_inotify_updates, [self.confignotifier, self.notifier])
+
+        self.baseconfig_valid = True
+        self.parsecache_valid = False
 
         # Take a lock so only one copy of bitbake can run against a given build
         # directory at a time
@@ -155,6 +182,38 @@ class BBCooker:
         signal.signal(signal.SIGTERM, self.sigterm_exception)
         # Let SIGHUP exit as SIGTERM
         signal.signal(signal.SIGHUP, self.sigterm_exception)
+
+    def config_notifications(self, event):
+        if not event.path in self.inotify_modified_files:
+            self.inotify_modified_files.append(event.path)
+        self.baseconfig_valid = False
+
+    def notifications(self, event):
+        if not event.path in self.inotify_modified_files:
+            self.inotify_modified_files.append(event.path)
+        self.parsecache_valid = False
+
+    def add_filewatch(self, deps, watcher=None):
+        if not watcher:
+            watcher = self.watcher
+        for i in deps:
+            f = i[0]
+            if f in watcher.bbseen:
+                continue
+            watcher.bbseen.append(f)
+            while True:
+                # We try and add watches for files that don't exist but if they did, would influence
+                # the parser. The parent directory of these files may not exist, in which case we need 
+                # to watch any parent that does exist for changes.
+                try:
+                    watcher.add_watch(f, self.watchmask, quiet=False)
+                    break
+                except pyinotify.WatchManagerError as e:
+                    if 'ENOENT' in str(e):
+                        f = os.path.dirname(f)
+                        watcher.bbseen.append(f)
+                        continue
+                    raise
 
     def sigterm_exception(self, signum, stackframe):
         if signum == signal.SIGTERM:
@@ -1286,12 +1345,25 @@ class BBCooker:
         if self.state == state.running:
             return
 
-        if self.state in (state.shutdown, state.forceshutdown):
+        if self.state in (state.shutdown, state.forceshutdown, state.error):
             if hasattr(self.parser, 'shutdown'):
                 self.parser.shutdown(clean=False, force = True)
             raise bb.BBHandledException()
 
         if self.state != state.parsing:
+
+            # reload files for which we got notifications
+            for p in self.inotify_modified_files:
+                bb.parse.update_cache(p)
+            self.inotify_modified_files = []
+
+            if not self.baseconfig_valid:
+                logger.debug(1, "Reloading base configuration data")
+                self.initConfigurationData()
+                self.baseconfig_valid = True
+                self.parsecache_valid = False
+
+        if self.state != state.parsing and not self.parsecache_valid:
             self.parseConfiguration ()
             if CookerFeatures.SEND_SANITYEVENTS in self.featureset:
                 bb.event.fire(bb.event.SanityCheck(False), self.data)
@@ -1306,9 +1378,12 @@ class BBCooker:
             (filelist, masked) = self.collection.collect_bbfiles(self.data, self.event_data)
 
             self.data.renameVar("__depends", "__base_depends")
+            self.add_filewatch(self.data.getVar("__base_depends"), self.configwatcher)
 
             self.parser = CookerParser(self, filelist, masked)
-            self.state = state.parsing
+            self.parsecache_valid = True
+
+        self.state = state.parsing
 
         if not self.parser.parse_next():
             collectlog.debug(1, "parsing complete")
@@ -1870,7 +1945,7 @@ class CookerParser(object):
                 self.skipped += 1
                 self.cooker.skiplist[virtualfn] = SkippedPackage(info_array[0])
             self.bb_cache.add_info(virtualfn, info_array, self.cooker.recipecache,
-                                        parsed=parsed)
+                                        parsed=parsed, watcher = self.cooker.add_filewatch)
         return True
 
     def reparse(self, filename):

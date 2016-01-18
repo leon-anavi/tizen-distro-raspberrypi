@@ -245,7 +245,7 @@ class Git(FetchMethod):
         subdir = ud.parm.get("subpath", "")
         if subdir != "":
             readpathspec = ":%s" % (subdir)
-            def_destsuffix = "%s/" % os.path.basename(subdir)
+            def_destsuffix = "%s/" % os.path.basename(subdir.rstrip('/'))
         else:
             readpathspec = ""
             def_destsuffix = "git/"
@@ -339,7 +339,10 @@ class Git(FetchMethod):
         """
         Compute the HEAD revision for the url
         """
-        search = "refs/heads/%s refs/tags/%s^{}" % (ud.unresolvedrev[name], ud.unresolvedrev[name])
+        if ud.unresolvedrev[name][:5] == "refs/":
+            search = "%s %s^{}" % (ud.unresolvedrev[name], ud.unresolvedrev[name])
+        else:
+            search = "refs/heads/%s refs/tags/%s^{}" % (ud.unresolvedrev[name], ud.unresolvedrev[name])
         output = self._lsremote(ud, d, search)
         return output.split()[0]
 
